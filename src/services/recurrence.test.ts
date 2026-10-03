@@ -1,0 +1,1 @@
+import{describe,it,expect}from'vitest';import{nextDate}from'./recurrence';describe('task recurrence',()=>{it('calculates daily',()=>expect(nextDate('2026-09-28','daily')).toBe('2026-09-29'));it('calculates weekly',()=>expect(nextDate('2026-09-28','weekly')).toBe('2026-10-05'));it('ignores none',()=>expect(nextDate('2026-09-28','none')).toBeUndefined())})

@@ -1,0 +1,91 @@
+{
+ "id": "./",
+ "name": "Amir OS",
+ "short_name": "Amir OS",
+ "description": "سیستم مدیریت زندگی شخصی، یادگیری، کارها، مالی و سلامت",
+ "start_url": "./?page=dashboard",
+ "scope": "./",
+ "display": "standalone",
+ "display_override": [
+  "window-controls-overlay",
+  "standalone",
+  "minimal-ui"
+ ],
+ "orientation": "any",
+ "background_color": "#09070d",
+ "theme_color": "#7c3aed",
+ "lang": "fa",
+ "dir": "rtl",
+ "categories": [
+  "productivity",
+  "lifestyle",
+  "education",
+  "finance"
+ ],
+ "icons": [
+  {
+   "src": "./icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "./icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "./icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ],
+ "shortcuts": [
+  {
+   "name": "ایده جدید",
+   "short_name": "ایده",
+   "url": "./?page=notes",
+   "icons": [
+    {
+     "src": "./icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "کار جدید",
+   "short_name": "کارها",
+   "url": "./?page=tasks",
+   "icons": [
+    {
+     "src": "./icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "ثبت یادگیری",
+   "short_name": "یادگیری",
+   "url": "./?page=learning",
+   "icons": [
+    {
+     "src": "./icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  },
+  {
+   "name": "ویش‌لیست",
+   "short_name": "ویش‌لیست",
+   "url": "./?page=wishlist",
+   "icons": [
+    {
+     "src": "./icon-192.png",
+     "sizes": "192x192"
+    }
+   ]
+  }
+ ]
+}

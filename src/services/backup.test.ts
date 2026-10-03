@@ -1,0 +1,1 @@
+import{describe,it,expect}from'vitest';import{makeBackup,parseBackup}from'./backup';import{seed}from'../db';describe('backup',()=>{it('round trips data',()=>{const copy=parseBackup(JSON.stringify(makeBackup(seed)));expect(copy.tasks.length).toBe(seed.tasks.length);expect(copy.settings.theme).toBe(seed.settings.theme)})})
