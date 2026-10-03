@@ -158,6 +158,7 @@ export function gameState(db: DB, now: Date = new Date()): GameState {
 
   const quests = questsFor(db, facts.get(today));
   const streak = streakOf(active, today);
+  const arcade = db.settings.arcade?.best ?? {};
   const wishesDone = db.wishes.filter(w => w.status === 'done').length;
   const bd = (id: string, icon: string, title: string, desc: string, progress: number, goal: number): Badge =>
     ({ id, icon, title, desc, progress: Math.min(progress, goal), goal, done: progress >= goal });
@@ -180,6 +181,9 @@ export function gameState(db: DB, now: Date = new Date()): GameState {
     bd('journal7', '📓', 'راوی', '۷ روز ثبت روزانه', journalDays, 7),
     bd('ideas10', '💡', 'ایده‌پرداز', '۱۰ ایده یا یادداشت', db.notes.length, 10),
     bd('wish3', '🎁', 'آرزوی برآورده', '۳ مورد ویش‌لیست تمام‌شده', wishesDone, 3),
+    bd('arc-doodle', '🪂', 'پرندهٔ ماه', '۱۰۰ امتیاز در بازی «پرش تا ماه»', arcade.doodle ?? 0, 100),
+    bd('arc-hunt', '🐇', 'گرگ شبگرد', '۱۵۰ امتیاز در بازی «شکار شبانه»', arcade.hunt ?? 0, 150),
+    bd('arc-jinn', '👻', 'جن‌گیر', '۲۰۰ امتیاز در بازی «شکار جن»', arcade.jinn ?? 0, 200),
     bd('lvl5', '⭐', 'سطح ۵', 'به سطح ۵ برس', level, 5),
     bd('lvl10', '🌙', 'سطح ۱۰', 'به سطح ۱۰ برس', level, 10),
   ];

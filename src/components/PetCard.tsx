@@ -1,6 +1,7 @@
 import { ChevronLeft } from 'lucide-react';
 import { Card } from '../ui';
 import { stageGlow, useGame } from './useGame';
+import ArcadePanel from './ArcadePanel';
 import { BossBar, PetHero, QuestList } from './PetParts';
 
 /** Dashboard game card: wolf + XP ring, today's quests, weekly boss. Details live on the "نُکس" page. */
@@ -16,6 +17,7 @@ export default function PetCard({ go }: { go: (p: any) => void }) {
           <QuestList g={g} go={go} />
           <BossBar boss={g.boss} />
         </div>
+        <ArcadePanel />
         <button onClick={() => go('pet')} className="flex items-center gap-1 text-xs text-violet-300 hover:text-white mx-auto">دستاوردها، زنجیره و جزئیات XP<ChevronLeft size={14} /></button>
       </div>
     </Card>

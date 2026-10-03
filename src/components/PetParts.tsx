@@ -5,26 +5,34 @@ import { BOSS_XP, coachLines, PERFECT_DAY_XP, QUEST_XP, XP_PER_LEVEL } from '../
 import type { Boss, GameState, Quest } from '../services/game';
 import { MOOD_LABEL } from '../services/pet';
 import { stageGlow, useGame } from './useGame';
+import { useStore } from '../store';
+import { feedPet, MAX_BUFFS, meatLeft } from '../arcade/rules';
+import PixelPet from './PixelPet';
 
-/** Wolf inside an XP ring, with a level badge. Tap to hear the next coach line. */
+/** The pixel wolf's room + status. Tap the wolf to pet it, tap the ground to make it walk, feed it with meat earned from finished tasks. */
 export function PetHero({ big = false }: { big?: boolean }) {
-  const { data, g } = useGame();
+  const { data, setData } = useStore();
+  const { g } = useGame();
   const [i, setI] = useState(0);
+  const [say, setSay] = useState<string | null>(null);
+  const [feedTick, setFeedTick] = useState(0);
   const lines = useMemo(() => coachLines(data, g), [data, g]);
   const glow = stageGlow(g.xp.level);
-  const size = big ? 188 : 150;
-  const r = size / 2 - 7, c = 2 * Math.PI * r;
   const frac = g.xp.levelXp / XP_PER_LEVEL;
+  const meat = meatLeft(data);
+  const buffs = data.settings.arcade?.buffs ?? 0;
+  const feed = () => {
+    const next = feedPet(data.settings.arcade, meat);
+    if (!next) { setSay(buffs >= MAX_BUFFS ? 'سیرم! سه جان اضافه برای بازی ذخیره دارم 🍖' : 'گوشت ندارم! با تمام‌کردن کارها گوشت جمع می‌شود 🥩'); return; }
+    setData(d => ({ ...d, settings: { ...d.settings, arcade: feedPet(d.settings.arcade, meatLeft(d)) ?? d.settings.arcade } }));
+    setFeedTick(n => n + 1); setSay('ممنون! دور بعدی بازی‌ها یک جان اضافه داری 🍖');
+  };
   return (
-    <div className="relative flex items-center gap-4 md:gap-6" style={{ ['--glow' as string]: glow }}>
-      <button onClick={() => setI(n => n + 1)} aria-label={`نوازش ${data.settings.petName}`} className="relative shrink-0 outline-none" style={{ width: size, height: size }}>
-        <svg className="absolute inset-0 -rotate-90" width={size} height={size} aria-hidden>
-          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="rgba(255,255,255,.08)" strokeWidth="6" />
-          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--glow)" strokeWidth="6" strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - frac)} style={{ filter: 'drop-shadow(0 0 6px var(--glow))', transition: 'stroke-dashoffset .8s' }} />
-        </svg>
-        <img src="./wolf-pet.png" alt={`پت گرگ ${data.settings.petName}`} draggable={false} className={`pet-img pet-${g.mood} absolute inset-3 object-contain select-none`} style={{ width: size - 24, height: size - 24 }} />
-        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold text-white" style={{ background: 'linear-gradient(90deg,#5b21b6,var(--glow))', boxShadow: '0 0 12px var(--glow)' }}>LV.{faNum(g.xp.level)}</span>
-      </button>
+    <div className={`relative flex flex-col ${big ? 'lg:flex-row' : 'md:flex-row'} gap-4 md:gap-6 items-stretch ${big ? 'lg:items-center' : 'md:items-center'}`} style={{ ['--glow' as string]: glow }}>
+      <div className={`relative shrink-0 rounded-xl overflow-hidden ${big ? 'lg:w-[460px]' : 'md:w-[340px]'}`} style={{ border: `2px solid ${glow}`, boxShadow: `0 0 22px ${glow}66` }}>
+        <PixelPet level={g.xp.level} glow={glow} feedTick={feedTick} label={`نوازش ${data.settings.petName}`} onPoke={() => { setI(n => n + 1); setSay(null); }} />
+        <span className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold text-white" style={{ background: 'linear-gradient(90deg,#5b21b6,var(--glow))', boxShadow: '0 0 12px var(--glow)' }}>LV.{faNum(g.xp.level)}</span>
+      </div>
       <div className="flex-1 min-w-0 text-white">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-[11px] tracking-widest" style={{ color: 'var(--glow)' }}>{g.stage.title}</span>
@@ -34,11 +42,16 @@ export function PetHero({ big = false }: { big?: boolean }) {
           </span>
         </div>
         <h3 className={`${big ? 'text-3xl' : 'text-xl md:text-2xl'} font-extrabold mt-1`}>{data.settings.petName}</h3>
-        <p key={i} className="pet-say text-sm mt-2" role="status">{lines[i % lines.length]}</p>
+        <p key={`${i}-${say}`} className="pet-say text-sm mt-2" role="status">{say ?? lines[i % lines.length]}</p>
         <div className="mt-3 max-w-sm">
           <div className="flex justify-between text-[11px] mb-1 text-violet-200/80"><span>تا سطح {faNum(g.xp.level + 1)}</span><bdi dir="ltr">{faNum(g.xp.levelXp)} / {faNum(XP_PER_LEVEL)} XP</bdi></div>
           <div className="h-2 rounded-full bg-white/10 overflow-hidden"><i className="block h-full rounded-full pet-xp" style={{ width: `${frac * 100}%` }} /></div>
         </div>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button onClick={feed} className="quest-row rounded-xl px-3 py-2 text-xs font-bold hover:brightness-125" aria-label="غذا دادن به گرگ">🍖 غذا بده · {faNum(meat)} گوشت</button>
+          <span className="text-[11px] text-violet-200/70">گوشت = کار تمام‌شده · هر غذا یک جان اضافه در بازی‌ها{buffs ? ` (ذخیره: ${faNum(buffs)})` : ''}</span>
+        </div>
+        <p className="text-[11px] text-violet-200/50 mt-2">روی گرگ بزن تا نوازش شود؛ روی زمین بزن تا بیاید. شب‌ها (۲۳ تا ۶) می‌خوابد 😴</p>
       </div>
     </div>
   );

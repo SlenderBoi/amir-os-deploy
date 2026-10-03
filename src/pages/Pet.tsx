@@ -1,6 +1,7 @@
 import { Flame, Trophy } from 'lucide-react';
 import { Card, faNum } from '../ui';
 import { useStore } from '../store';
+import ArcadePanel from '../components/ArcadePanel';
 import { BossBar, PetHero, QuestList } from '../components/PetParts';
 import { stageGlow, useGame } from '../components/useGame';
 import { BOSS_XP, PERFECT_DAY_XP, QUEST_XP, XP_PER_LEVEL } from '../services/game';
@@ -30,6 +31,8 @@ export default function PetPage({ go }: { go: (p: any) => void }) {
         <Card className="pet-stage"><QuestList g={g} go={go} /></Card>
         <Card className="pet-stage"><BossBar boss={g.boss} /></Card>
       </div>
+
+      <Card className="pet-stage"><ArcadePanel /></Card>
 
       <Card>
         <div className="flex items-center justify-between mb-3"><h3 className="font-bold flex items-center gap-2"><Trophy size={18} className="accent" />دستاوردها</h3><span className="text-xs muted">{faNum(unlocked)} از {faNum(g.badges.length)}</span></div>
