@@ -1,2 +1,3 @@
 import React from 'react';import ReactDOM from 'react-dom/client';import './index.css';import App from './App';import {StoreProvider} from './store';import {SyncProvider} from './components/useSync';
+try{localStorage.removeItem('amir-os-lock')}catch{}
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><StoreProvider><SyncProvider><App/></SyncProvider></StoreProvider></React.StrictMode>);if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`));
