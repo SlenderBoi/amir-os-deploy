@@ -3,6 +3,7 @@ import { dueCards } from './srs';
 import { eventsOn } from './holidays';
 import { addDaysISO, faDigits, formatJalali, isFriday } from './jalali';
 import { localISO } from './dates';
+import { isOpen, leadOf, taskAt } from './taskTime';
 
 /**
  * Works out which phone notifications should exist for the next three days.
@@ -31,7 +32,7 @@ export function planReminders(db: DB, now: Date, cfg: NtfyConfig): Planned[] {
     const day = addDaysISO(today, i);
 
     if (cfg.digest) {
-      const due = open.filter(t => t.due === day);
+      const due = open.filter(t => t.due === day).sort((a, b) => (a.time ?? '99:99').localeCompare(b.time ?? '99:99'));
       const overdue = i === 0 ? open.filter(t => t.due && t.due < day) : [];
       const evs = db.events.filter(e => e.date === day).sort((a, b) => a.start.localeCompare(b.start));
       const reviews = dueCards(db, day).length;
@@ -40,7 +41,7 @@ export function planReminders(db: DB, now: Date, cfg: NtfyConfig): Planned[] {
         const lines: string[] = [];
         if (off.length) lines.push(`🎌 ${off.join('، ')}`);
         if (cfg.showTitles) {
-          due.slice(0, 5).forEach(t => lines.push(`• ${t.title}`));
+          due.slice(0, 5).forEach(t => lines.push(`• ${t.time ? `${clock(t.time)} ` : ''}${t.title}`));
           if (due.length > 5) lines.push(`… و ${n(due.length - 5)} کار دیگر`);
           evs.slice(0, 4).forEach(e => lines.push(`⏰ ${clock(e.start)} ${e.title}`));
         } else {
@@ -82,6 +83,21 @@ export function planReminders(db: DB, now: Date, cfg: NtfyConfig): Planned[] {
         title: cfg.showTitles ? e.title : 'بلوک زمانی',
         body: `${cfg.eventLead > 0 ? `${n(cfg.eventLead)} دقیقه دیگر · ` : ''}ساعت ${clock(e.start)}`,
         priority: e.kind === 'reminder' ? 5 : 4, tags: ['alarm_clock'],
+      });
+    }
+  }
+
+  // timed tasks: one alarm per task, `lead` minutes before (same on/off switch as time blocks)
+  if (cfg.events) {
+    const lead = leadOf(db);
+    for (const t of db.tasks.filter(isOpen)) {
+      const start = taskAt(t);
+      if (start === null) continue;
+      push({
+        id: `k-${t.id}-${t.due}-${t.time!.replace(':', '')}`, at: start - lead * 60_000,
+        title: cfg.showTitles ? t.title : 'کار ساعت‌دار',
+        body: `${lead > 0 ? `${n(lead)} دقیقه دیگر · ` : ''}ساعت ${clock(t.time!)}`,
+        priority: t.priority === 'urgent' ? 5 : t.priority === 'high' ? 4 : 3, tags: ['alarm_clock'],
       });
     }
   }

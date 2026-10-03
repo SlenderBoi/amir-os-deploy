@@ -1,5 +1,5 @@
 export type Status='inbox'|'todo'|'doing'|'done'|'archived';export type Priority='low'|'medium'|'high'|'urgent';
-export interface Task {id:string;title:string;description:string;status:Status;priority:Priority;due?:string;start?:string;estimate:number;actual:number;companyId?:string;projectId?:string;tags:string[];subtasks:{id:string;title:string;done:boolean}[];recurring?:string;notes:string;completedAt?:string;createdAt:string;updatedAt:string}
+export interface Task {id:string;title:string;description:string;status:Status;priority:Priority;due?:string;/** time of day for `due`, "HH:MM" (24h); optional */time?:string;start?:string;estimate:number;actual:number;companyId?:string;projectId?:string;tags:string[];subtasks:{id:string;title:string;done:boolean}[];recurring?:string;notes:string;completedAt?:string;createdAt:string;updatedAt:string}
 export interface Company{id:string;name:string;color:string;createdAt:string}
 export interface Project{id:string;name:string;description:string;companyId:string;status:'active'|'paused'|'done';priority:Priority;start?:string;deadline?:string;budget:number;income:number;progress:number;notes:string;milestones:string[];createdAt:string}
 export interface Event{id:string;title:string;date:string;start:string;end:string;kind:'work'|'personal'|'reminder';taskId?:string;createdAt:string}
@@ -18,7 +18,7 @@ season?:number;/** units finished so far (episodes / pages / lessons / hours) */
 linkedTrackId?:string;boughtTransactionId?:string}
 export interface LearningLog{id:string;date:string;minutes:number;topic:string;notes:string;keyPoints:string[];ideas:string[];resource?:string;kind?:string;createdAt:string}
 export interface LearningTrack{id:string;title:string;description:string;color:string;status:'active'|'paused'|'mastered';goalHours:number;tags:string[];resources:{id:string;title:string;url?:string;done:boolean}[];logs:LearningLog[];createdAt:string}
-export interface Settings{theme:Theme;currency:string;monthlyIncomeGoal:number;workStart:string;workEnd:string;personalHours:number;notifications:boolean;aiEndpoint:string;aiProvider:'mock'|'local';weekStartsSaturday:boolean;petName:string;petEnabled:boolean;holidayFix?:Record<string,number>;/** alert ids the user has marked as read (pruned to the newest ~150) */dismissedAlerts?:string[];ntfy?:NtfyConfig}
+export interface Settings{theme:Theme;currency:string;monthlyIncomeGoal:number;workStart:string;workEnd:string;personalHours:number;notifications:boolean;aiEndpoint:string;aiProvider:'mock'|'local';weekStartsSaturday:boolean;petName:string;petEnabled:boolean;holidayFix?:Record<string,number>;/** alert ids the user has marked as read (pruned to the newest ~150) */dismissedAlerts?:string[];/** minutes before a timed task that its alarm rings (default 10) */taskLead?:number;/** beep with the in-app alarm (default on) */alarmSound?:boolean;ntfy?:NtfyConfig}
 export interface TimeEntry{id:string;taskId:string;date:string;minutes:number;createdAt:string}
 export interface ActiveTimer{kind:'task'|'learning';refId:string;label:string;startedAt:string}
 /** Spaced-repetition state, keyed by LearningLog id. `due` is a local YYYY-MM-DD date. */

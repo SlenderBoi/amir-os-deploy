@@ -1,3 +1,4 @@
+import { faTime } from '../../services/taskTime';
 import { useState } from 'react';
 import { Minus, Plus, RotateCcw } from 'lucide-react';
 import { Card, faNum } from '../../ui';
@@ -22,7 +23,7 @@ export default function DayDetail({ iso, compact = false, onAddEvent, onEditEven
   const friday = isFriday(iso);
   const dayOff = friday || occasions.some(o => o.off);
   const events = data.events.filter(e => e.date === iso).sort((a, b) => a.start.localeCompare(b.start));
-  const tasks = data.tasks.filter(t => t.due === iso && t.status !== 'archived');
+  const tasks = data.tasks.filter(t => t.due === iso && t.status !== 'archived').sort((a, b) => (a.time ?? '99:99').localeCompare(b.time ?? '99:99'));
   const h = toHijri(iso);
 
   const nudge = (o: (typeof occasions)[number], delta: number) => setData(d => {
@@ -36,7 +37,7 @@ export default function DayDetail({ iso, compact = false, onAddEvent, onEditEven
   const addTask = () => {
     const parsed = parseQuickTask(text);
     if (!parsed.title) return;
-    const task = toTask({ ...parsed, due: parsed.due ?? iso });
+    const task = toTask({ ...parsed, due: parsed.dueImplied ? iso : parsed.due ?? iso });
     setData(d => ({ ...d, tasks: [task, ...d.tasks] }));
     setText('');
   };
@@ -80,7 +81,7 @@ export default function DayDetail({ iso, compact = false, onAddEvent, onEditEven
         {tasks.map(t => (
           <div key={t.id} className="flex items-center gap-2 text-xs p-2 rounded-lg" style={{ background: 'var(--panel2)', opacity: t.status === 'done' ? 0.55 : 1 }}>
             <i className="w-2 h-2 rounded-full shrink-0" style={{ background: PRIORITY_COLOR[t.priority] }} />
-            <span className={`flex-1 ${t.status === 'done' ? 'line-through' : ''}`}>{t.title}</span>
+            {t.time && <span className="accent font-bold tabular-nums">⏰ {faTime(t.time)}</span>}<span className={`flex-1 ${t.status === 'done' ? 'line-through' : ''}`}>{t.title}</span>
             {t.estimate > 0 && t.status !== 'done' && <span className="muted">{faNum(t.estimate)}د</span>}
           </div>
         ))}

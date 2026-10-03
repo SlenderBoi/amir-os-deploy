@@ -28,7 +28,7 @@ export default function NotificationBell({ go }: { go: (p: AlertPage | 'settings
   }, [open]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const alerts = useMemo(() => buildAlerts(data), [data, tick]);
+  const alerts = useMemo(() => buildAlerts(data), [data, tick, open]);
   const read = new Set(data.settings.dismissedAlerts ?? []);
   const unread = alerts.filter(a => !read.has(a.id));
   const list = showRead ? alerts : unread;

@@ -81,9 +81,9 @@ export default function NtfySettings() {
 
       <div className="mt-4">
         <Row><span className="text-sm">خلاصهٔ صبح (کارها، بلوک‌ها، مرورها، تعطیلی)</span><div className="flex items-center gap-2"><input type="time" className="field !w-36" value={cfg.digestTime} onChange={e => patch({ digestTime: e.target.value })} disabled={!cfg.digest} aria-label="ساعت خلاصه صبح" /><Toggle on={cfg.digest} onChange={v => patch({ digest: v })} label="خلاصه صبح" /></div></Row>
-        <Row><span className="text-sm">قبل از شروع هر بلوک زمانی</span><div className="flex items-center gap-2">
+        <Row><span className="text-sm">قبل از شروع هر بلوک زمانی <span className="text-[11px] muted">(کارهای ساعت‌دار هم با همین کلید، و با «دقیقهٔ آلارم کارها» در کارت بالا)</span></span><div className="flex items-center gap-2">
           <select className="field !w-36" value={cfg.eventLead} onChange={e => patch({ eventLead: Number(e.target.value) })} disabled={!cfg.events} aria-label="چند دقیقه قبل">{[0, 5, 10, 15, 30, 60].map(m => <option key={m} value={m}>{m ? `${faNum(m)} دقیقه` : 'سر وقت'}</option>)}</select>
-          <Toggle on={cfg.events} onChange={v => patch({ events: v })} label="یادآور بلوک زمانی" /></div></Row>
+          <Toggle on={cfg.events} onChange={v => patch({ events: v })} label="یادآور بلوک‌ها و کارهای ساعت‌دار" /></div></Row>
         <Row><span className="text-sm">یادآور شبانه (عادت‌ها و لاگ یادگیری)</span><div className="flex items-center gap-2"><input type="time" className="field !w-36" value={cfg.eveningTime} onChange={e => patch({ eveningTime: e.target.value })} disabled={!cfg.evening} aria-label="ساعت یادآور شبانه" /><Toggle on={cfg.evening} onChange={v => patch({ evening: v })} label="یادآور شبانه" /></div></Row>
         <Row><span className="text-sm">مرور هفتگی (جمعه ۱۷:۰۰)</span><Toggle on={cfg.weeklyReview} onChange={v => patch({ weeklyReview: v })} label="مرور هفتگی" /></Row>
         <Row><div><div className="text-sm">نمایش عنوان کارها در اعلان</div><div className="text-[11px] muted mt-0.5">خاموش = فقط تعداد (امن‌تر). هر کسی تاپیک را بداند پیام‌ها را می‌خواند.</div></div><Toggle on={cfg.showTitles} onChange={v => patch({ showTitles: v })} label="نمایش عنوان" /></Row>

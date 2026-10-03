@@ -1,3 +1,4 @@
+import { defaultDayFor, normalizeTime } from './taskTime';
 import type { Priority, Task } from '../types';
 import { localISO } from './dates';
 import { addDays } from './srs';
@@ -7,6 +8,7 @@ import { parseJalali } from './jalali';
  * Quick-capture syntax (works anywhere a task can be typed):
  *   خرید هدیه > بودجه > لیست  !فوری  #شخصی  @فردا  ~45
  *   ">" starts subtasks · "!" priority · "#" tag · "@" due date · "~" estimate (minutes, or 1.5h / 2س)
+ *   "^" time of day: ^7:30 · ^19 · ^۷:۳۰ (with no @date: today if still ahead, otherwise tomorrow)
  */
 export interface ParsedTask {
   title: string;
@@ -14,6 +16,10 @@ export interface ParsedTask {
   tags: string[];
   estimate?: number;
   due?: string;
+  /** "HH:MM"; a bare time with no @date means today if still ahead, else tomorrow */
+  time?: string;
+  /** true when `due` was only guessed from a bare time (callers that know the day, like the calendar, should override it) */
+  dueImplied?: boolean;
   subtasks: string[];
 }
 
@@ -45,6 +51,7 @@ export function parseQuickTask(input: string, now: Date = new Date()): ParsedTas
       }
       return false;
     }
+    if (token.startsWith('^')) { const t = normalizeTime(token.slice(1)); if (t) { result.time = t; return true; } return false; }
     const est = token.match(/^~(\d+(?:\.\d+)?)(h|س|m|د)?$/i);
     if (est) { const n = Number(est[1]); result.estimate = Math.max(1, Math.round(/h|س/i.test(est[2] ?? '') ? n * 60 : n)); return true; }
     return false;
@@ -55,6 +62,7 @@ export function parseQuickTask(input: string, now: Date = new Date()): ParsedTas
   result.title = first ?? '';
   result.subtasks = rest.filter(Boolean);
   result.tags = [...new Set(result.tags)];
+  if (result.time && !result.due) { result.due = defaultDayFor(result.time, now); result.dueImplied = true; }
   return result;
 }
 
@@ -62,7 +70,7 @@ export function toTask(p: ParsedTask, now: Date = new Date()): Task {
   const iso = now.toISOString();
   return {
     id: crypto.randomUUID(), title: p.title, description: '', status: p.due ? 'todo' : 'inbox', priority: p.priority,
-    due: p.due, estimate: p.estimate ?? 30, actual: 0, tags: p.tags,
+    due: p.due, time: p.time, estimate: p.estimate ?? 30, actual: 0, tags: p.tags,
     subtasks: p.subtasks.map(title => ({ id: crypto.randomUUID(), title, done: false })),
     notes: '', createdAt: iso, updatedAt: iso,
   };

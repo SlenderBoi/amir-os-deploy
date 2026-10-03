@@ -4,6 +4,7 @@ import { eventsOn } from './holidays';
 import { addDaysISO, faDigits, isFriday } from './jalali';
 import { localISO } from './dates';
 import { entryFor } from './journal';
+import { faTime, leadOf, taskAt, whenText } from './taskTime';
 
 /**
  * "Needs attention" list for the bell. It is a pure function of the data and the clock, so nothing is
@@ -40,6 +41,15 @@ export function buildAlerts(db: DB, now: Date = new Date()): Alert[] {
   if (overdue.length) out.push({ id: `overdue:${day}:${overdue.length}`, level: 'urgent', title: `${n(overdue.length)} کار عقب‌افتاده`, detail: `قدیمی‌ترین: «${overdue[0].title}»`, page: 'tasks' });
   const dueToday = open.filter(t => t.due === day);
   if (dueToday.length) out.push({ id: `due:${day}:${dueToday.length}`, level: 'warn', title: `${n(dueToday.length)} کار برای امروز`, detail: dueToday.slice(0, 2).map(t => `«${t.title}»`).join('، ') + (dueToday.length > 2 ? '، …' : ''), page: 'tasks' });
+
+  // 2b. timed tasks that are about to start (inside the alarm lead) or have just started
+  const lead = leadOf(db);
+  for (const t of open) {
+    const at = taskAt(t);
+    if (at === null) continue;
+    const left = at - now.getTime();
+    if (left <= lead * 60_000 && left > -30 * 60_000) out.push({ id: `tt:${t.id}:${t.due}:${t.time}`, level: left > 0 ? 'warn' : 'urgent', title: `${whenText(at, now.getTime())}: ${t.title}`, detail: `ساعت ${faTime(t.time!)}`, page: 'tasks' });
+  }
 
   // 3. today's schedule: what starts in the next two hours, or is running now
   for (const e of db.events.filter(x => x.date === day).sort((a, b) => a.start.localeCompare(b.start))) {
