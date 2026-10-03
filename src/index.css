@@ -7,7 +7,7 @@
 /* ---------- Pet ---------- */
 .pet-stage{background:linear-gradient(135deg,#0b0713 0%,#130a22 55%,#1b0d33 100%);border:1px solid rgba(139,92,246,.35);box-shadow:0 0 40px rgba(139,92,246,.12),inset 0 0 40px rgba(0,0,0,.4)}
 .pet-aura{background:radial-gradient(circle at 18% 55%,rgba(139,92,246,.32),transparent 52%),radial-gradient(circle at 90% 10%,rgba(168,85,247,.14),transparent 40%)}
-.pet-img{filter:drop-shadow(0 0 14px rgba(139,92,246,.55));animation:pet-float 4.5s ease-in-out infinite;transition:transform .25s}
+.pet-img{filter:drop-shadow(0 0 14px var(--glow,rgba(139,92,246,.55)));animation:pet-float 4.5s ease-in-out infinite;transition:transform .25s}
 .pet-img:active{transform:scale(.94) rotate(-3deg)}
 .pet-hyped{animation:pet-bounce 1.1s ease-in-out infinite;filter:drop-shadow(0 0 22px rgba(168,85,247,.9))}
 .pet-sleepy{animation-duration:8s;filter:drop-shadow(0 0 8px rgba(139,92,246,.3)) brightness(.7)}
@@ -22,3 +22,13 @@
 @keyframes pet-pop{from{opacity:0;transform:scale(.85) translateY(6px)}to{opacity:1;transform:none}}
 @keyframes pet-rise{0%{opacity:0;transform:translateY(0)}15%{opacity:.9}100%{opacity:0;transform:translateY(-190px)}}
 @media(prefers-reduced-motion:reduce){.pet-img,.pet-spark{animation:none!important}}
+.quest-row{background:rgba(20,10,36,.62);border:1px solid rgba(168,85,247,.25)}
+.boss-hp{background:linear-gradient(90deg,#9f1239,#f43f5e,#fda4af);box-shadow:0 0 10px rgba(244,63,94,.7);transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.boss-float{display:inline-block;animation:pet-float 3.2s ease-in-out infinite}
+.game-toast{background:linear-gradient(135deg,#1b0d33,#2a1250);border:1px solid rgba(168,85,247,.6);box-shadow:0 8px 30px rgba(0,0,0,.5),0 0 24px rgba(139,92,246,.35);animation:pet-pop .3s ease-out}
+.confetti{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;opacity:0;animation:confetti-fall 2.2s ease-in forwards}
+.badge-card{background:rgba(20,10,36,.55);border:1px solid rgba(168,85,247,.22)}
+.badge-card.done{border-color:rgba(250,204,21,.55);box-shadow:0 0 18px rgba(250,204,21,.12)}
+.badge-card:not(.done) .badge-ic{filter:grayscale(1);opacity:.35}
+@keyframes confetti-fall{0%{opacity:1;transform:translate(0,0) rotate(0)}100%{opacity:0;transform:translate(var(--dx,0),105vh) rotate(540deg)}}
+@media(prefers-reduced-motion:reduce){.confetti,.boss-float,.game-toast{animation:none!important}}
