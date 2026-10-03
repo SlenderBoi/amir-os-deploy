@@ -18,7 +18,7 @@ export default function PetPage({ go }: { go: (p: any) => void }) {
     <div className="space-y-4 max-w-5xl mx-auto">
       <Card className="relative overflow-hidden !p-0 pet-stage">
         <div className="absolute inset-0 pet-aura" aria-hidden style={{ ['--glow' as string]: stageGlow(g.xp.level) }} />
-        <div className="relative p-5 md:p-8"><PetHero big /></div>
+        <div className="relative p-5 md:p-8"><PetHero big go={go} /></div>
         <div className="relative grid grid-cols-2 md:grid-cols-4 gap-px bg-white/10 border-t border-white/10 text-white text-center">
           {[
             ['زنجیرهٔ فعلی', `${faNum(g.streak.current)} روز`, '🔥'], ['بهترین زنجیره', `${faNum(g.streak.best)} روز`, '🏅'],

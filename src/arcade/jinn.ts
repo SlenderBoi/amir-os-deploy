@@ -1,4 +1,4 @@
-import { bands, clamp, createInput, rand, rectsHit, runLoop, sprite } from './engine';
+import { bands, clamp, createInput, drawWolf, rand, rectsHit, runLoop, sprite } from './engine';
 import { isBossWave, waveSize } from './rules';
 import type { GameDef, Upgrade } from './types';
 
@@ -111,7 +111,7 @@ export const jinn: GameDef = {
         ctx.globalAlpha = 1;
         if (j.boss) { ctx.fillStyle = '#0b0615'; ctx.fillRect(j.x - 1, j.y - 9, j.w + 2, 6); ctx.fillStyle = '#f43f5e'; ctx.fillRect(j.x, j.y - 8, Math.max(0, (j.w * j.hp) / j.max), 4); }
       }
-      if (inv <= 0 || Math.floor(t * 14) % 2 === 0) { ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.fillRect(me.x + 4, me.y + me.h - 2, me.w - 8, 3); sprite(ctx, S.wolf, me.x, me.y, me.w, me.h, me.face < 0 ? true : false); }
+      if (inv <= 0 || Math.floor(t * 14) % 2 === 0) { ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.fillRect(me.x + 4, me.y + me.h - 2, me.w - 8, 3); drawWolf(ctx, S, me.x, me.y, me.w, me.h, me.face < 0); }
       for (const b of bolts) { ctx.fillStyle = '#a5f3fc'; ctx.fillRect(Math.round(b.x) - 2, Math.round(b.y) - 2, 5, 5); ctx.fillStyle = '#22d3ee'; ctx.fillRect(Math.round(b.x - b.vx * 0.02) - 1, Math.round(b.y - b.vy * 0.02) - 1, 3, 3); }
       for (const p of puffs) { ctx.fillStyle = p.c; ctx.globalAlpha = clamp(p.life * 2.5, 0, 1); ctx.fillRect(Math.round(p.x), Math.round(p.y), 3, 3); }
       ctx.globalAlpha = 1;

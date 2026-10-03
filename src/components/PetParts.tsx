@@ -7,10 +7,12 @@ import { MOOD_LABEL } from '../services/pet';
 import { stageGlow, useGame } from './useGame';
 import { useStore } from '../store';
 import { feedPet, MAX_BUFFS, meatLeft } from '../arcade/rules';
+import { lookOf } from '../shop/rules';
+import type { Look } from '../shop/rules';
 import PixelPet from './PixelPet';
 
 /** The pixel wolf's room + status. Tap the wolf to pet it, tap the ground to make it walk, feed it with meat earned from finished tasks. */
-export function PetHero({ big = false }: { big?: boolean }) {
+export function PetHero({ big = false, go, look }: { big?: boolean; go?: (p: any) => void; look?: Look }) {
   const { data, setData } = useStore();
   const { g } = useGame();
   const [i, setI] = useState(0);
@@ -30,7 +32,7 @@ export function PetHero({ big = false }: { big?: boolean }) {
   return (
     <div className={`relative flex flex-col ${big ? 'lg:flex-row' : 'md:flex-row'} gap-4 md:gap-6 items-stretch ${big ? 'lg:items-center' : 'md:items-center'}`} style={{ ['--glow' as string]: glow }}>
       <div className={`relative shrink-0 rounded-xl overflow-hidden ${big ? 'lg:w-[460px]' : 'md:w-[340px]'}`} style={{ border: `2px solid ${glow}`, boxShadow: `0 0 22px ${glow}66` }}>
-        <PixelPet level={g.xp.level} glow={glow} feedTick={feedTick} label={`نوازش ${data.settings.petName}`} onPoke={() => { setI(n => n + 1); setSay(null); }} />
+        <PixelPet look={look ?? lookOf(data.settings.shop)} glow={glow} feedTick={feedTick} label={`نوازش ${data.settings.petName}`} onPoke={() => { setI(n => n + 1); setSay(null); }} />
         <span className="absolute top-2 right-2 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold text-white" style={{ background: 'linear-gradient(90deg,#5b21b6,var(--glow))', boxShadow: '0 0 12px var(--glow)' }}>LV.{faNum(g.xp.level)}</span>
       </div>
       <div className="flex-1 min-w-0 text-white">
@@ -49,6 +51,7 @@ export function PetHero({ big = false }: { big?: boolean }) {
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <button onClick={feed} className="quest-row rounded-xl px-3 py-2 text-xs font-bold hover:brightness-125" aria-label="غذا دادن به گرگ">🍖 غذا بده · {faNum(meat)} گوشت</button>
+          {go && <button onClick={() => go('shop')} className="quest-row rounded-xl px-3 py-2 text-xs font-bold hover:brightness-125" aria-label="فروشگاه گرگ">🛍️ فروشگاه · <span style={{ color: '#fde047' }}>{faNum(g.coins)} 🪙</span></button>}
           <span className="text-[11px] text-violet-200/70">گوشت = کار تمام‌شده · هر غذا یک جان اضافه در بازی‌ها{buffs ? ` (ذخیره: ${faNum(buffs)})` : ''}</span>
         </div>
         <p className="text-[11px] text-violet-200/50 mt-2">روی گرگ بزن تا نوازش شود؛ روی زمین بزن تا بیاید. شب‌ها (۲۳ تا ۶) می‌خوابد 😴</p>

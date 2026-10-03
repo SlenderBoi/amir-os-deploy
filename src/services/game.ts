@@ -1,5 +1,6 @@
 import type { DB } from '../types';
 import { localISO } from './dates';
+import { coinBalance } from '../shop/rules';
 import { computeXp, MOOD_LABEL, petMood, petSpeech, petStage, XP_PER_LEVEL } from './pet';
 import type { PetMood } from './pet';
 
@@ -122,6 +123,7 @@ function weeklyDone(db: DB): Map<string, number> {
 export interface Badge { id: string; icon: string; title: string; desc: string; progress: number; goal: number; done: boolean }
 
 export interface GameState {
+  coins: number;
   xp: { total: number; level: number; levelXp: number; parts: { label: string; xp: number }[] };
   quests: Quest[];
   questsDone: number;
@@ -189,6 +191,7 @@ export function gameState(db: DB, now: Date = new Date()): GameState {
   ];
 
   return {
+    coins: coinBalance(db, total),
     xp: { total, level, levelXp: total % XP_PER_LEVEL, parts },
     quests, questsDone: questDoneCount(quests), perfectToday: questDoneCount(quests) === quests.length, perfectDays,
     streak, boss: bossFor(db, today), bossesDefeated, badges, mood: petMood(db, now), stage: petStage(level),

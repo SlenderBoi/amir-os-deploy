@@ -2,9 +2,10 @@ import { useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { Card, faNum } from '../ui';
 import DayDetail from '../components/calendar/DayDetail';
+import DayTimeline, { WeekTimeline } from '../components/calendar/DayTimeline';
 import EventForm, { blankEvent } from '../components/calendar/EventForm';
 import { eventsOn, nextHolidays } from '../services/holidays';
-import { JMONTHS, WEEKDAYS_SHORT, addDaysISO, diffDays, faDigits, formatJalali, fromJalali, gregorianSpan, isFriday, monthGrid, monthLength, monthTitle, shiftMonth, startOfWeek, toJalali } from '../services/jalali';
+import { JMONTHS, weekdayIndex, WEEKDAYS_SHORT, addDaysISO, diffDays, faDigits, formatJalali, fromJalali, gregorianSpan, isFriday, monthGrid, monthLength, monthTitle, shiftMonth, startOfWeek, toJalali } from '../services/jalali';
 import { localISO } from '../services/dates';
 import { useStore } from '../store';
 import type { Event } from '../types';
@@ -106,6 +107,9 @@ export default function Calendar() {
           <DayDetail iso={cursor} onAddEvent={addEvent} onEditEvent={setEdit} />
         </div>
       )}
+
+      {view === 'week' && <WeekTimeline days={week} label={d => `${WEEKDAYS_SHORT[weekdayIndex(d)]} ${faDigits(formatJalali(d, { year: false }))}`} onEditEvent={setEdit} />}
+      {view === 'day' && <Card className="max-w-xl"><h3 className="font-bold text-sm mb-3">برنامهٔ ساعتی</h3><DayTimeline iso={cursor} onEditEvent={setEdit} /></Card>}
 
       {view !== 'month' && (
         <div className={`grid gap-2 ${view === 'week' ? 'grid-cols-1 md:grid-cols-7' : 'max-w-xl'}`}>

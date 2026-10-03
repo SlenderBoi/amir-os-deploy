@@ -1,4 +1,4 @@
-import { bands, clamp, createInput, rand, rectsHit, runLoop, sprite } from './engine';
+import { bands, clamp, createInput, drawWolf, rand, rectsHit, runLoop, sprite } from './engine';
 import { stageForCaught } from './rules';
 import type { GameDef } from './types';
 
@@ -87,7 +87,7 @@ export const hunt: GameDef = {
       if (inv <= 0 || Math.floor(t * 14) % 2 === 0) {
         const bob = wolf.y >= GROUND - wolf.h - 0.5 ? Math.abs(Math.sin(t * 14)) * -3 : 0;
         ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(wolf.x + 6, GROUND - 2, wolf.w - 8, 4);
-        sprite(ctx, S.wolf, wolf.x, wolf.y + bob, wolf.w, wolf.h);
+        drawWolf(ctx, S, wolf.x, wolf.y + bob, wolf.w, wolf.h);
       }
       for (const p of puffs) { ctx.fillStyle = p.c; ctx.globalAlpha = clamp(p.life * 2, 0, 1); ctx.fillRect(Math.round(p.x), Math.round(p.y), 3, 3); }
       ctx.globalAlpha = 1; ctx.restore();

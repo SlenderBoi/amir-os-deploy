@@ -12,7 +12,7 @@ export default function PetCard({ go }: { go: (p: any) => void }) {
     <Card className="relative overflow-hidden !p-0 pet-stage" >
       <div className="absolute inset-0 pet-aura" aria-hidden style={{ ['--glow' as string]: stageGlow(g.xp.level) }} />
       <div className="relative p-4 md:p-6 space-y-5">
-        <PetHero />
+        <PetHero go={go} />
         <div className="grid lg:grid-cols-[1.5fr_1fr] gap-4">
           <QuestList g={g} go={go} />
           <BossBar boss={g.boss} />

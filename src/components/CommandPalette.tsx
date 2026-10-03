@@ -19,7 +19,7 @@ import { formatJalali } from '../services/jalali';
 const PAGES: [string, string][] = [
   ['dashboard', 'امروز'], ['tasks', 'کارها'], ['projects', 'پروژه‌ها'], ['calendar', 'تقویم'],
   ['finance', 'مالی'], ['health', 'سلامت'], ['learning', 'یادگیری'], ['wishlist', 'ویش‌لیست'],
-  ['notes', 'ایده‌ها و یادداشت‌ها'], ['journal', 'ثبت روزانه'], ['insights', 'آمار و فعالیت'], ['pet', 'نُکس · مأموریت و دستاورد'], ['automation', 'اتوماسیون'], ['review', 'مرور هفتگی'], ['settings', 'تنظیمات'],
+  ['notes', 'ایده‌ها و یادداشت‌ها'], ['journal', 'ثبت روزانه'], ['insights', 'آمار و فعالیت'], ['pet', 'نُکس · مأموریت و دستاورد'], ['shop', 'فروشگاه گرگ · اسکین و اکسسوری'], ['automation', 'اتوماسیون'], ['review', 'مرور هفتگی'], ['settings', 'تنظیمات'],
 ];
 
 /** Normalises Arabic/Persian letter variants and digits so "ي" matches "ی" and "۱" matches "1". */

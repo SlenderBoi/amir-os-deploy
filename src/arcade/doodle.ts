@@ -1,4 +1,4 @@
-import { bands, clamp, createInput, rand, runLoop, sprite } from './engine';
+import { bands, clamp, createInput, drawWolf, rand, runLoop } from './engine';
 import { stageForHeight } from './rules';
 import type { GameDef } from './types';
 
@@ -93,7 +93,7 @@ export const doodle: GameDef = {
       }
       const h = wolf.h * (wolf.vy < 0 ? 1.06 : 1) * (squash > 0 ? 0.92 : 1);
       
-      sprite(ctx, S.wolf, wolf.x, wolf.y + wolf.h - h, wolf.w, h, wolf.face < 0);
+      drawWolf(ctx, S, wolf.x, wolf.y + wolf.h - h, wolf.w, h, wolf.face < 0);
       if (flash > 0) { ctx.fillStyle = `rgba(255,255,255,${flash * 0.35})`; ctx.fillRect(0, 0, W, H); }
     };
 

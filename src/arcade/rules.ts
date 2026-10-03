@@ -5,7 +5,7 @@ import type { GameId } from './types';
 export const UNLOCK: Record<GameId, number> = { doodle: 1, hunt: 2, jinn: 3 };
 export const MAX_BUFFS = 3;
 
-export interface Arcade { best: Record<string, number>; meatSpent: number; buffs: number; plays: number }
+export interface Arcade { best: Record<string, number>; meatSpent: number; buffs: number; plays: number; coins?: number }
 export const emptyArcade = (): Arcade => ({ best: {}, meatSpent: 0, buffs: 0, plays: 0 });
 const norm = (a?: Partial<Arcade>): Arcade => ({ ...emptyArcade(), ...a, best: { ...(a?.best ?? {}) } });
 
@@ -27,12 +27,16 @@ export function startRun(a: Arcade | undefined): { arcade: Arcade; lives: number
   return { arcade: { ...x, buffs: x.buffs - bonus }, lives: 3 + bonus };
 }
 
-export function recordRun(a: Arcade | undefined, id: GameId, score: number): { arcade: Arcade; record: boolean } {
+export const coinsForRun = (score: number) => Math.min(25, Math.floor(score / 8));
+
+export function recordRun(a: Arcade | undefined, id: GameId, score: number): { arcade: Arcade; record: boolean; coins: number } {
   const x = norm(a);
   const record = score > (x.best[id] ?? 0);
   if (record) x.best[id] = score;
   x.plays += 1;
-  return { arcade: x, record };
+  const coins = coinsForRun(score);
+  x.coins = (x.coins ?? 0) + coins;
+  return { arcade: x, record, coins };
 }
 
 export const isUnlocked = (id: GameId, level: number) => level >= UNLOCK[id];

@@ -4,7 +4,8 @@ import { faNum } from '../ui';
 import { useStore } from '../store';
 import { loadSprites } from '../arcade/engine';
 import type { Sprites } from '../arcade/engine';
-import { recordRun, startRun } from '../arcade/rules';
+import { coinsForRun, recordRun, startRun } from '../arcade/rules';
+import { lookOf } from '../shop/rules';
 import type { GameDef, HudState, Upgrade } from '../arcade/types';
 
 type Phase = 'ready' | 'playing' | 'over';
@@ -20,11 +21,12 @@ export default function ArcadeModal({ def, onClose }: { def: GameDef; onClose: (
   const [hud, setHud] = useState<HudState>({ score: 0, stage: 1, lives: 3 });
   const [banner, setBanner] = useState('');
   const [pick, setPick] = useState<{ opts: Upgrade[]; fn: (i: number) => void } | null>(null);
-  const [result, setResult] = useState<{ score: number; stage: number; record: boolean } | null>(null);
+  const [result, setResult] = useState<{ score: number; stage: number; record: boolean; coins: number } | null>(null);
   const best = data.settings.arcade?.best[def.id] ?? 0;
   const buffs = data.settings.arcade?.buffs ?? 0;
 
-  useEffect(() => { loadSprites().then(setSprites).catch(() => setFailed(true)); }, []);
+  const look = lookOf(data.settings.shop);
+  useEffect(() => { loadSprites(look.skin).then(sp => setSprites({ ...sp, acc: look.acc })).catch(() => setFailed(true)); }, [look.skin]);
   useEffect(() => () => { stopRef.current?.(); }, []);
   useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); }; addEventListener('keydown', k); return () => removeEventListener('keydown', k); }, [onClose]);
 
@@ -39,8 +41,8 @@ export default function ArcadeModal({ def, onClose }: { def: GameDef; onClose: (
       hud: setHud,
       stage: n => { setBanner(`مرحلهٔ ${faNum(n)}`); setTimeout(() => setBanner(b => (b === `مرحلهٔ ${faNum(n)}` ? '' : b)), 1600); },
       over: r => {
-        setData(d => { const x = recordRun(d.settings.arcade, def.id, r.score); return { ...d, settings: { ...d.settings, arcade: x.arcade } }; });
-        setResult({ ...r, record: r.score > best }); setPhase('over');
+        setData(d => ({ ...d, settings: { ...d.settings, arcade: recordRun(d.settings.arcade, def.id, r.score).arcade } }));
+        setResult({ ...r, record: r.score > best, coins: coinsForRun(r.score) }); setPhase('over');
       },
       upgrade: (opts, fn) => setPick({ opts, fn: i => { setPick(null); fn(i); } }),
     }, { lives: run.lives });
@@ -87,6 +89,7 @@ export default function ArcadeModal({ def, onClose }: { def: GameDef; onClose: (
             <div className="text-4xl mb-1">{result.record ? '🏆' : '💀'}</div>
             <h3 className="text-xl font-extrabold">{result.record ? 'رکورد جدید!' : 'بازی تمام شد'}</h3>
             <p className="mt-2 text-sm">امتیاز: <b data-testid="final">{faNum(result.score)}</b> · مرحله {faNum(result.stage)}</p>
+            <p className="text-xs mt-1" style={{ color: '#fde047' }}>+{faNum(result.coins)} 🪙 سکه</p>
             <p className="text-xs text-violet-300 mt-1">رکورد: {faNum(Math.max(best, result.score))}</p>
             <div className="flex gap-2 mt-4">
               <button onClick={start} className="px-5 py-2 rounded-xl font-bold text-white" style={{ background: 'linear-gradient(90deg,#6d28d9,#a855f7)' }}>دوباره</button>
